@@ -169,33 +169,34 @@ export const navItems = [
   export const workExperience = [
     {
       id: 1,
-      title: "Frontend Engineer Intern",
-      desc: "Assisted in the development of a web-based platform using React.js, enhancing interactivity.",
+      title: "Lorem Ipsum Dolor Sit",
+      desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum vestibulum.",
       className: "md:col-span-2",
       thumbnail: "/exp1.svg",
     },
     {
       id: 2,
-      title: "Mobile App Dev - JSM Tech",
-      desc: "Designed and developed mobile app for both iOS & Android platforms using React Native.",
-      className: "md:col-span-2", // change to md:col-span-2
+      title: "Sed Do Eiusmod Tempor",
+      desc: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.",
+      className: "md:col-span-2",
       thumbnail: "/exp2.svg",
     },
     {
       id: 3,
-      title: "Freelance App Dev Project",
-      desc: "Led the dev of a mobile app for a client, from initial concept to deployment on app stores.",
-      className: "md:col-span-2", // change to md:col-span-2
+      title: "Consectetur Adipiscing Elit",
+      desc: "Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      className: "md:col-span-2",
       thumbnail: "/exp3.svg",
     },
     {
       id: 4,
-      title: "Lead Frontend Developer",
-      desc: "Developed and maintained user-facing features using modern frontend technologies.",
+      title: "Vivamus Lacinia Odio",
+      desc: "Vivamus lacinia odio vitae vestibulum vestibulum. Curabitur venenatis euismod libero, a fringilla quam varius.",
       className: "md:col-span-2",
       thumbnail: "/exp4.svg",
     },
   ];
+  
   
   export const socialMedia = [
     {
@@ -211,3 +212,69 @@ export const navItems = [
       img: "/link.svg",
     },
   ];
+
+  export const cardData =  [
+    {
+      title: "Astra Nova",
+      order: "Phase 1",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras hendrerit velit ac turpis feugiat, ut cursus urna condimentum.",
+      animationSpeed: 3,
+      containerClassName: "bg-blue-700",
+      colors: [
+        [52, 152, 219],
+        [41, 128, 185],
+      ],
+      dotSize: 2,
+    },
+    {
+      title: "Lyra Constellation",
+      order: "Phase 2",
+      description: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.",
+      animationSpeed: 2,
+      containerClassName: "bg-red-800",
+      colors: [
+        [231, 76, 60],
+        [192, 57, 43],
+      ],
+      dotSize: 4,
+    },
+    {
+      title: "Orion Nebula",
+      order: "Phase 3",
+      description: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.",
+      animationSpeed: 2,
+      containerClassName: "bg-green-700",
+      colors: [
+        [46, 204, 113],
+        [39, 174, 96],
+      ],
+      dotSize: 4,
+    },
+    // {
+    //   title: "Vega Star",
+    //   order: "Phase 4",
+    //   description: "Curabitur vel tincidunt mauris, sit amet lobortis nisl. Aenean vehicula vehicula dolor, sed faucibus lacus ultricies vel.",
+    //   animationSpeed: 4,
+    //   containerClassName: "bg-yellow-800",
+    //   colors: [
+    //     [241, 196, 15],
+    //     [243, 156, 18],
+    //   ],
+    //   dotSize: 2,
+    // },
+    // {
+    //   title: "Celestial Blossom",
+    //   order: "Phase 5",
+    //   description: "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut eget magna vel lorem ultrices lacinia.",
+    //   animationSpeed: 3,
+    //   containerClassName: "bg-purple-500",
+    //   colors: [
+    //     [236, 72, 153],
+    //     [232, 121, 249],
+    //   ],
+    //   dotSize: 2,
+    // }
+  ];
+  
+  
+  
