@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 // import localFont from "next/font/local";
-import {Inter} from "next/font/google"
+import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider"
-const inter = Inter({subsets:["latin"]})
+import { ThemeProvider } from "@/components/theme-provider";
+import { ClerkProvider } from "@clerk/nextjs";
+const inter = Inter({ subsets: ["latin"] });
 // const geistMono = localFont({
 //   src: "./fonts/GeistMonoVF.woff",
 //   variable: "--font-geist-mono",
@@ -21,11 +22,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${inter.className} `}
-      >
-         <ThemeProvider
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`${inter.className} `}>
+          <ThemeProvider
             attribute="class"
             defaultTheme="dark"
             enableSystem
@@ -33,8 +33,8 @@ export default function RootLayout({
           >
             {children}
           </ThemeProvider>
-       
-      </body>
-    </html>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
