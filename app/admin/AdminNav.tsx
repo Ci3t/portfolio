@@ -1,25 +1,13 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth, clerkClient, User } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-type User = {
-  id: string;
-  primaryEmailAddressId?: string;
-  primaryPhoneNumberId?: string;
-  firstName?: string;
-  lastName?: string;
-  username?: string;
-  publicMetadata: Record<string, any>;
-  privateMetadata: Record<string, any>;
-  emailAddresses: Array<{
-    id: string;
-    emailAddress: string;
-  }>;
-  phoneNumbers: Array<{
-    id: string;
-    phoneNumber: string;
-  }>;
-};
+import { AdminSideBar } from "./AdminSideBar";
 
-export default async function AdminNav({ user }: any) {
+interface AdminNavProps {
+  user: User;
+}
+export default async function AdminNav({ user }: AdminNavProps) {
+  console.log(user);
+
   return (
     <div>
       <h1>Admin Dashboard</h1>

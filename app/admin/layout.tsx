@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import AdminNav from "./AdminNav";
 import { redirect } from "next/navigation";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { AdminSideBar } from "./AdminSideBar";
 
 const inter = Inter({ subsets: ["latin"] });
 // const geistMono = localFont({
@@ -46,7 +47,8 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AdminNav user={user} />
+          {/* <AdminNav user={user} /> */}
+
           {children}
         </ThemeProvider>
       </body>
