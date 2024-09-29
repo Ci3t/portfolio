@@ -14,6 +14,11 @@ const projectsSchema = new Schema({
             required:true,
             trim:true
         },
+        imgUrl: {
+            type:String,
+            required:true,
+            trim:true
+        },
         img: {
             type:String,
             required:true,

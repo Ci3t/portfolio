@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -10,10 +10,58 @@ import {
 import { Label } from "./ui/Label";
 import { Input } from "./ui/Input";
 import { Textarea } from "./ui/textarea";
+import { addProject } from "@/lib/action";
+import { FileUp } from "./FileUp";
 
+type Img64 = {
+  imgUrl: string | ArrayBuffer | null | undefined;
+};
 export function AddProject() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [file, setFile] = useState<File | null>(null);
+  const [imgUrl, setImgUrl] = useState<Img64 | null>(null);
+  const handleFileUpload = (file: File) => {
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = (event) => {
+        const base64String = event?.target?.result;
+        setImgUrl({ imgUrl: base64String });
+      };
+
+      reader.readAsDataURL(file);
+      setFile(file);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // change from formElement to fileInput
+    // const fileInput = e.currentTarget.querySelector(
+    //   'input[type="file"]'
+    // ) as HTMLInputElement;
+
+    // if (fileInput && fileInput.files?.[0]) {
+    //   handleFileUpload(fileInput.files?.[0]);
+    // }
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    // Get the file from FormData instead of using querySelector
+    const file = formData.get("file") as File | null;
+
+    if (file) {
+      handleFileUpload(file);
+    }
+
+    if (imgUrl?.imgUrl) {
+      const formData = new FormData(e.currentTarget);
+      formData.append("img", imgUrl.imgUrl as string);
+
+      await addProject(formData); // Call the server-side action
+      console.log("Form submitted with Base64 image");
+    }
+    // const formData = new FormData(e.currentTarget);
     console.log("Form submitted");
   };
   return (
@@ -36,12 +84,26 @@ export function AddProject() {
         </div>
 
         <LabelInputContainer className="mb-4">
-          <Label htmlFor="img">Image</Label>
-          <Input id="img" placeholder="••••••••" type="text" />
+          <Label htmlFor="imgUrl">Image Url</Label>
+          <Input name="imgUrl" id="imgUrl" placeholder="••••••••" type="text" />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
+          <Label htmlFor="img">img</Label>
+          <Input
+            name="img"
+            id="img"
+            placeholder="••••••••"
+            type="file"
+            // onChange={(e) => {
+            //   const selectedFile = e.target.files?.[0];
+            //   if (selectedFile) handleFileUpload(selectedFile);
+            // }}
+          />
+        </LabelInputContainer>
+        {/* <FileUp /> */}
+        <LabelInputContainer className="mb-4">
           <Label htmlFor="icon">Icons</Label>
-          <Input id="icon" placeholder="••••••••" type="text" />
+          <Input name="icon" id="icon" placeholder="••••••••" type="text" />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="des">Description</Label>
