@@ -1,69 +1,60 @@
 "use client";
 import React, { useState } from "react";
-
+import { CldUploadWidget } from "next-cloudinary";
 import { cn } from "@/lib/utils";
-import {
-  IconBrandGithub,
-  IconBrandGoogle,
-  IconBrandOnlyfans,
-} from "@tabler/icons-react";
+
 import { Label } from "./ui/Label";
 import { Input } from "./ui/Input";
 import { Textarea } from "./ui/textarea";
 import { addProject } from "@/lib/action";
-import { FileUp } from "./FileUp";
 
-type Img64 = {
-  imgUrl: string | ArrayBuffer | null | undefined;
-};
+interface CloudinaryResourceInfo {
+  public_id: string;
+  secure_url: string;
+}
 export function AddProject() {
-  const [file, setFile] = useState<File | null>(null);
-  const [imgUrl, setImgUrl] = useState<Img64 | null>(null);
-  const handleFileUpload = (file: File) => {
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onload = (event) => {
-        const base64String = event?.target?.result;
-        setImgUrl({ imgUrl: base64String });
-      };
-
-      reader.readAsDataURL(file);
-      setFile(file);
-    }
-  };
+  const [resource, setResource] = useState<CloudinaryResourceInfo | undefined>(
+    undefined
+  );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // change from formElement to fileInput
-    // const fileInput = e.currentTarget.querySelector(
-    //   'input[type="file"]'
-    // ) as HTMLInputElement;
-
-    // if (fileInput && fileInput.files?.[0]) {
-    //   handleFileUpload(fileInput.files?.[0]);
-    // }
+    console.log("Form submission started");
 
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    // Get the file from FormData instead of using querySelector
-    const file = formData.get("file") as File | null;
+    // Log all form data
+    // console.log("All form data:");
+    // logFormData(formData);
 
-    if (file) {
-      handleFileUpload(file);
+    if (resource) {
+      console.log("Resource data:", resource);
+      formData.set("img_id", resource.public_id);
+      formData.set("img_url", resource.secure_url);
+    } else {
+      console.warn("No image was uploaded to Cloudinary");
     }
 
-    if (imgUrl?.imgUrl) {
-      const formData = new FormData(e.currentTarget);
-      formData.append("img", imgUrl.imgUrl as string);
+    // Log form data again after adding Cloudinary info
+    // console.log("Form data after adding Cloudinary info:");
+    // logFormData(formData);
 
-      await addProject(formData); // Call the server-side action
-      console.log("Form submitted with Base64 image");
+    try {
+      const response = await addProject(formData);
+      console.log("Server response:", response);
+    } catch (error) {
+      console.error("Error submitting form:", error);
     }
-    // const formData = new FormData(e.currentTarget);
-    console.log("Form submitted");
   };
+
+  // Helper function to log FormData contents
+  //   const logFormData = (formData: FormData) => {
+  //     const entries = Array.from(formData.entries());
+  //     entries.forEach(([key, value]) => {
+  //       console.log(key, value);
+  //     });
+  //   };
   return (
     <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
@@ -88,17 +79,36 @@ export function AddProject() {
           <Input name="imgUrl" id="imgUrl" placeholder="••••••••" type="text" />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
-          <Label htmlFor="img">img</Label>
-          <Input
+          <Label htmlFor="img_url">img</Label>
+          {/* <Input
             name="img"
             id="img"
             placeholder="••••••••"
             type="file"
-            // onChange={(e) => {
-            //   const selectedFile = e.target.files?.[0];
-            //   if (selectedFile) handleFileUpload(selectedFile);
-            // }}
-          />
+            onChange={(e) => {
+              const selectedFile = e.target.files?.[0];
+              if (selectedFile) handleFileUpload(selectedFile);
+            }}
+          /> */}
+          <CldUploadWidget
+            signatureEndpoint="/api/sign-image"
+            onSuccess={(result) => {
+              const info = result?.info as CloudinaryResourceInfo;
+              console.log("Cloudinary upload success:", info);
+              setResource(info);
+            }}
+            onQueuesEnd={(result, { widget }) => {
+              widget.close();
+            }}
+          >
+            {({ open }) => {
+              function handleOnClick() {
+                setResource(undefined);
+                open();
+              }
+              return <button onClick={handleOnClick}>Upload an Image</button>;
+            }}
+          </CldUploadWidget>
         </LabelInputContainer>
         {/* <FileUp /> */}
         <LabelInputContainer className="mb-4">
@@ -111,8 +121,9 @@ export function AddProject() {
         </LabelInputContainer>
 
         <button
-          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] cursor-pointer"
           type="submit"
+          disabled={!resource}
         >
           Submit &rarr;
           <BottomGradient />

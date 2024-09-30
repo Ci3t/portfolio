@@ -16,12 +16,17 @@ const projectsSchema = new Schema({
         },
         imgUrl: {
             type:String,
-            required:true,
+            
             trim:true
         },
-        img: {
+        img_url: {
             type:String,
-            required:true,
+            
+            trim:true
+        },
+        img_id: {
+            type:String,
+           
             trim:true
         },
         iconLists: {
@@ -33,4 +38,4 @@ const projectsSchema = new Schema({
 },{timestamps:true}
 )
 
-export const Projects = models.Projects || model("Projects",projectsSchema)
+export const Projects = models?.Projects || model("Projects",projectsSchema)

@@ -6,10 +6,11 @@ import { Projects } from "./models";
 export const addProject = async(formdata:FormData)=>{
     connectToDb()
 
-    const {title,des,imgUrl,icon,img} = Object.fromEntries(formdata)
+    const {title,des,imgUrl,icon,img_id,img_url} = Object.fromEntries(formdata)
 
-    console.log(img);
-    console.log(imgUrl);
+    
+
+  
     
     if (typeof icon === "string") {
         const iconArray = icon.split(",").map((item) => item.trim());
@@ -17,13 +18,22 @@ export const addProject = async(formdata:FormData)=>{
       } else {
         console.error("Expected a string but got a file or invalid type for icon.");
       }    
+
+      if(!(title || des )){
+        throw new Error("Missing Fields")
+        
+      }
+      if(!(img_url || imgUrl )){
+        throw new Error("One Image at least required")
+        
+      }
     const newProject = new Projects({
-        title,des,img,icon
+        title,des,img_id,img_url,icon,imgUrl
     })
     console.log(formdata);
 
-    // await newProject.save()
-    // console.log("New Project has been added");
+    await newProject.save()
+    console.log("New Project has been added");
     
     
 }
