@@ -1,10 +1,10 @@
 import React from "react";
-import { AdminSideBar } from "./AdminSideBar";
 
-const AdminDashboard = () => {
+const AdminDashboard = async () => {
   return (
     <div>
-      <AdminSideBar />
+      hi
+      {/* Pass projects directly, no need for JSON.stringify */}
     </div>
   );
 };

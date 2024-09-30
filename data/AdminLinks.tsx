@@ -11,7 +11,7 @@ import Image from "next/image";
 export const adminLinks = [
   {
     label: "Dashboard",
-    href: "#",
+    href: "/admin/projects",
     icon: (
       <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
     ),

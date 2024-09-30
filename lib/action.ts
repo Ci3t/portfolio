@@ -8,10 +8,6 @@ export const addProject = async(formdata:FormData)=>{
 
     const {title,des,imgUrl,icon,img_id,img_url} = Object.fromEntries(formdata)
 
-    
-
-  
-    
     if (typeof icon === "string") {
         const iconArray = icon.split(",").map((item) => item.trim());
         console.log("iconArray", iconArray);
@@ -34,6 +30,39 @@ export const addProject = async(formdata:FormData)=>{
 
     await newProject.save()
     console.log("New Project has been added");
+    return "New Project has been added"
     
     
+}
+
+export const deleteProject = async (id:string)=>{
+
+    connectToDb()
+
+    try {
+        if(!id){
+            throw new Error("No id found")
+        }
+         await Projects.findByIdAndDelete({id})
+    } catch (error:any) {
+        console.log(error);
+        throw new Error ("Failed to Delete Proejct",error?.message)
+        
+    }
+
+}
+export const getProjects = async ()=>{
+
+    connectToDb()
+
+    try {
+      
+         const projects = await Projects.find()
+         return projects
+    } catch (error:any) {
+        console.log(error);
+        throw new Error ("Failed to fetch Proejcts",error?.message)
+        
+    }
+
 }
