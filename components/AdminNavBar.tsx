@@ -23,7 +23,11 @@ export interface AdminSideBarProps {
 
 export function AdminNavBar({ projects }: AdminSideBarProps) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const router = useRouter();
 
+  const handleNavigation = (path: string) => {
+    router.push(path);
+  };
   const menuItems = [
     "Profile",
     "Dashboard",
@@ -36,7 +40,6 @@ export function AdminNavBar({ projects }: AdminSideBarProps) {
     "Help & Feedback",
     "Log Out",
   ];
-  const router = useRouter();
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
@@ -64,12 +67,15 @@ export function AdminNavBar({ projects }: AdminSideBarProps) {
           <p className="font-bold text-inherit">ACME</p>
         </NavbarBrand>
         <NavbarItem>
-          <a onClick={handleClick} color="foreground" href="/">
+          <button
+            onClick={() => handleNavigation("/admin/projects")}
+            color="foreground"
+          >
             Features
-          </a>
+          </button>
         </NavbarItem>
         <NavbarItem isActive>
-          <a href="/admin/projects" aria-current="page">
+          <a href="/" aria-current="page">
             Customers
           </a>
         </NavbarItem>

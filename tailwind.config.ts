@@ -5,7 +5,7 @@ import colors from "tailwindcss/colors";
 import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette";
 
 const config: Config = {
-  darkMode: ["class"],
+  darkMode: ['class'],
   content: [
     "types/**/*.d.ts", // Include the types directory
     "./pages/**/*.{ts,tsx}",
@@ -174,6 +174,7 @@ function addVariablesForColors({ addBase, theme }: any) {
 
   addBase({
     ":root": newVars,
+    
   });
 }
 

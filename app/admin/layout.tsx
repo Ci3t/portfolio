@@ -1,24 +1,8 @@
-import type { Metadata } from "next";
-
-import { Inter } from "next/font/google";
-
-import { ThemeProvider } from "@/components/theme-provider";
-
 import { redirect } from "next/navigation";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { AdminSideBar } from "./AdminSideBar";
-
-const inter = Inter({ subsets: ["latin"] });
-// const geistMono = localFont({
-//   src: "./fonts/GeistMonoVF.woff",
-//   variable: "--font-geist-mono",
-//   weight: "100 900",
-// });
-
-import { getProjects } from "@/lib/action";
 import { AdminNavBar } from "@/components/AdminNavBar";
+import { getProjects } from "@/lib/action";
 
-// Define the ProjectsData interface
 export interface ProjectsData {
   _id: number;
   title: string;
@@ -30,12 +14,13 @@ export interface ProjectsData {
   createdAt: Date;
   updatedAt: Date;
 }
-export const metadata: Metadata = {
+
+export const metadata = {
   title: "RaNi's Portfolio Admin Page",
   description: "Fullstack Developer",
 };
 
-export default async function RootLayout({
+export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -43,7 +28,6 @@ export default async function RootLayout({
   const { userId } = auth();
   if (!userId) {
     redirect("/login");
-    return;
   }
 
   const user = await clerkClient.users.getUser(userId);
@@ -51,27 +35,14 @@ export default async function RootLayout({
 
   if (role !== "admin") {
     redirect("/");
-    return;
   }
 
   const projects: ProjectsData[] = await getProjects();
+
   return (
-    <html suppressHydrationWarning lang="en" className="dark">
-      <body className={`${inter.className}`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          storageKey="portfolio theme"
-          disableTransitionOnChange
-        >
-          <div className="flex flex-col">
-            {/* <AdminSideBar projects={projects || []} /> */}
-            <AdminNavBar projects={projects || []} />
-            <main className="flex-1 p-4 mt-15">{children}</main>
-          </div>
-        </ThemeProvider>
-      </body>
-    </html>
+    <div className="flex flex-col dark:bg-black-100 dark:text-white">
+      <AdminNavBar projects={projects || []} />
+      <main className="flex-1 p-4 mt-15">{children}</main>
+    </div>
   );
 }
