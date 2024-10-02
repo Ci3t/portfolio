@@ -11,6 +11,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "assets.aceternity.com",
       },
+      {
+        protocol: "https",
+        hostname: "tecdn.b-cdn.net",
+      },
     ],
   },
 };

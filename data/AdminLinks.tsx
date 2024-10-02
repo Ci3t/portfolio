@@ -10,31 +10,25 @@ import Image from "next/image";
 
 export const adminLinks = [
   {
-    label: "Dashboard",
+    label: "Projects",
     href: "/admin/projects",
+    subTitle: "View Projects",
     icon: (
       <IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
     ),
   },
   {
-    label: "Profile",
-    href: "#",
-    icon: (
-      <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-    ),
-  },
-  {
-    label: "Settings",
-    href: "#",
+    label: "Add Project",
+    href: "/admin/addproject",
     icon: (
       <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
     ),
   },
   {
-    label: "Logout",
-    href: "#",
+    label: "Homepage",
+    href: "/",
     icon: (
-      <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+      <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
     ),
   },
 ];

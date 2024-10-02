@@ -1,7 +1,16 @@
 "use server"
 
+
+import { revalidatePath } from "next/cache";
 import { connectToDb } from "./db";
 import { Projects } from "./models";
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+    cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export const addProject = async(formdata:FormData)=>{
     connectToDb()
@@ -40,13 +49,28 @@ export const deleteProject = async (id:string)=>{
     connectToDb()
 
     try {
-        if(!id){
-            throw new Error("No id found")
-        }
-         await Projects.findByIdAndDelete({id})
+        if (!id) {
+            throw new Error("No id found");
+          }
+      
+          const project = await Projects.findById(id);
+          if (!project) {
+            throw new Error("Project not found");
+          }
+          const img_id = project.img_id;
+          console.log('img_id:', img_id);
+          // Assuming the Cloudinary img_id is stored in the project document
+          
+          if (img_id) {
+            await cloudinary.uploader.destroy(img_id);
+            console.log(`Deleted image with img_id ${img_id}`);
+          }
+          await Projects.findByIdAndDelete(id);
+          console.log(`Deleted project with id ${id}`);
+          revalidatePath("/admin/projects")
     } catch (error:any) {
         console.log(error);
-        throw new Error ("Failed to Delete Proejct",error?.message)
+        throw new Error("Failed to delete project");
         
     }
 
@@ -61,7 +85,7 @@ export const getProjects = async ()=>{
          return projects
     } catch (error:any) {
         console.log(error);
-        throw new Error ("Failed to fetch Proejcts",error?.message)
+        throw new Error ("Failed to fetch Projects")
         
     }
 

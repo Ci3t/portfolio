@@ -7,6 +7,7 @@ import { Label } from "./ui/Label";
 import { Input } from "./ui/Input";
 import { Textarea } from "./ui/textarea";
 import { addProject } from "@/lib/action";
+import Image from "next/image";
 
 interface CloudinaryResourceInfo {
   public_id: string;
@@ -109,6 +110,13 @@ export function AddProject() {
               return <button onClick={handleOnClick}>Upload an Image</button>;
             }}
           </CldUploadWidget>
+          {resource?.secure_url && (
+            <img
+              className="w-[200px]"
+              src={resource?.secure_url || ""}
+              alt={"preview"}
+            />
+          )}
         </LabelInputContainer>
         {/* <FileUp /> */}
         <LabelInputContainer className="mb-4">
