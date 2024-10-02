@@ -27,11 +27,12 @@ export default async function AdminLayout({
 }>) {
   const { userId } = auth();
   if (!userId) {
-    redirect("/login");
+    redirect("/sign-in");
   }
 
   const user = await clerkClient.users.getUser(userId);
   const role = user.publicMetadata?.role;
+  console.log(role);
 
   if (role !== "admin") {
     redirect("/");

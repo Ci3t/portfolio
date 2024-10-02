@@ -76,7 +76,7 @@ export function AddProject() {
         </div>
 
         <LabelInputContainer className="mb-4">
-          <Label htmlFor="imgUrl">Image Url</Label>
+          <Label htmlFor="imgUrl">Live Website</Label>
           <Input name="imgUrl" id="imgUrl" placeholder="••••••••" type="text" />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
