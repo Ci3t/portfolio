@@ -2,65 +2,101 @@
 import React, { useState } from "react";
 import { CldUploadWidget } from "next-cloudinary";
 import { cn } from "@/lib/utils";
-
 import { Label } from "./ui/Label";
 import { Input } from "./ui/Input";
 import { Textarea } from "./ui/textarea";
-import { addProject } from "@/lib/action";
+import { addProject, checkTechStackIcons } from "@/lib/action";
 import Image from "next/image";
+import TagInput from "./Tags";
 
 interface CloudinaryResourceInfo {
   public_id: string;
   secure_url: string;
 }
+
 export function AddProject() {
   const [resource, setResource] = useState<CloudinaryResourceInfo | undefined>(
     undefined
   );
+  const [tags, setTags] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [missingIcons, setMissingIcons] = useState<string[]>([]);
+  const [iconResources, setIconResources] = useState<CloudinaryResourceInfo[]>(
+    []
+  ); // for tech stack icons
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null); // Clear previous errors
+    setMissingIcons([]); // Clear missing icons from previous run
     console.log("Form submission started");
 
     const form = e.currentTarget;
     const formData = new FormData(form);
-
-    // Log all form data
-    // console.log("All form data:");
-    // logFormData(formData);
-
-    if (resource) {
-      console.log("Resource data:", resource);
-      formData.set("img_id", resource.public_id);
-      formData.set("img_url", resource.secure_url);
-    } else {
-      console.warn("No image was uploaded to Cloudinary");
-    }
-
-    // Log form data again after adding Cloudinary info
-    // console.log("Form data after adding Cloudinary info:");
-    // logFormData(formData);
+    formData.set("icon", tags.join(","));
+    // Convert the comma-separated tags (icons) into an array
+    const iconInput = formData.get("icon") as string;
+    const iconArray = iconInput
+      ? iconInput.split(",").map((tag) => tag.trim())
+      : [];
 
     try {
+      // Check if all tech stack icons exist
+      const result = await checkTechStackIcons(iconArray); // Call server action
+      if (result.missingIcons.length > 0) {
+        setMissingIcons(result.missingIcons); // Display missing icons if any
+        setError(`Missing icons: ${result.missingIcons.join(", ")}`);
+        return; // Don't submit the form if icons are missing
+      }
+
+      // Add the tech stack icons to the FormData
+      formData.set("iconResources", JSON.stringify(iconResources));
+      if (resource) {
+        formData.set("img_id", resource.public_id);
+        formData.set("img_url", resource.secure_url);
+      } else {
+        console.warn("No image was uploaded to Cloudinary");
+      }
+
       const response = await addProject(formData);
       console.log("Server response:", response);
-    } catch (error) {
-      console.error("Error submitting form:", error);
+      setError(null); // Clear errors on successful submission
+    } catch (error: any) {
+      if (error.message) {
+        setError(`Failed to add project: ${error.message}`);
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
     }
   };
 
-  // Helper function to log FormData contents
-  //   const logFormData = (formData: FormData) => {
-  //     const entries = Array.from(formData.entries());
-  //     entries.forEach(([key, value]) => {
-  //       console.log(key, value);
-  //     });
-  //   };
   return (
     <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
         Add Project
       </h2>
+
+      {/* Error Section */}
+      {error && (
+        <div
+          className="bg-white text-red-500 text-lg"
+          style={{ marginTop: "10px" }}
+        >
+          {error}
+        </div>
+      )}
+
+      {/* Missing Icons Section */}
+      {missingIcons.length > 0 && (
+        <div className="text-red-500">
+          <p>Missing the following icons:</p>
+          <ul>
+            {missingIcons.map((icon, idx) => (
+              <li key={idx}>{icon}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <form className="my-8" onSubmit={handleSubmit}>
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
@@ -79,36 +115,27 @@ export function AddProject() {
           <Label htmlFor="imgUrl">Live Website</Label>
           <Input name="imgUrl" id="imgUrl" placeholder="••••••••" type="text" />
         </LabelInputContainer>
+
         <LabelInputContainer className="mb-4">
           <Label htmlFor="img_url">img</Label>
-          {/* <Input
-            name="img"
-            id="img"
-            placeholder="••••••••"
-            type="file"
-            onChange={(e) => {
-              const selectedFile = e.target.files?.[0];
-              if (selectedFile) handleFileUpload(selectedFile);
-            }}
-          /> */}
           <CldUploadWidget
             signatureEndpoint="/api/sign-image"
             onSuccess={(result) => {
               const info = result?.info as CloudinaryResourceInfo;
-              console.log("Cloudinary upload success:", info);
               setResource(info);
             }}
-            onQueuesEnd={(result, { widget }) => {
-              widget.close();
-            }}
           >
-            {({ open }) => {
-              function handleOnClick() {
-                setResource(undefined);
-                open();
-              }
-              return <button onClick={handleOnClick}>Upload an Image</button>;
-            }}
+            {({ open }) => (
+              <button
+                type="button"
+                onClick={() => {
+                  setResource(undefined); // Clear the resource
+                  open(); // Open the Cloudinary widget
+                }}
+              >
+                Upload an Image
+              </button>
+            )}
           </CldUploadWidget>
           {resource?.secure_url && (
             <img
@@ -118,11 +145,41 @@ export function AddProject() {
             />
           )}
         </LabelInputContainer>
-        {/* <FileUp /> */}
+
         <LabelInputContainer className="mb-4">
           <Label htmlFor="icon">Icons</Label>
-          <Input name="icon" id="icon" placeholder="••••••••" type="text" />
+          <TagInput tags={tags} setTags={setTags} />
         </LabelInputContainer>
+
+        <LabelInputContainer className="mb-4">
+          <Label htmlFor="techIcon">
+            Upload Tech Stack Icon (for new tags)
+          </Label>
+          <CldUploadWidget
+            signatureEndpoint="/api/sign-image"
+            onSuccess={(result) => {
+              const info = result?.info as CloudinaryResourceInfo;
+              setIconResources((prevIcons) => [...prevIcons, info]); // Add each new icon to the state
+            }}
+          >
+            {({ open }) => (
+              <button type="button" onClick={() => open()}>
+                Upload an Icon
+              </button>
+            )}
+          </CldUploadWidget>
+
+          {/* Display uploaded tech stack icons */}
+          {iconResources.map((icon, idx) => (
+            <img
+              key={idx}
+              className="w-[100px]"
+              src={icon.secure_url}
+              alt={`icon-${idx}`}
+            />
+          ))}
+        </LabelInputContainer>
+
         <LabelInputContainer className="mb-4">
           <Label htmlFor="des">Description</Label>
           <Textarea id="des" name="des" placeholder="Describe the Project" />
@@ -138,39 +195,6 @@ export function AddProject() {
         </button>
 
         <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
-
-        {/* <div className="flex flex-col space-y-4">
-          <button
-            className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-            type="submit"
-          >
-            <IconBrandGithub className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-            <span className="text-neutral-700 dark:text-neutral-300 text-sm">
-              GitHub
-            </span>
-            <BottomGradient />
-          </button>
-          <button
-            className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-            type="submit"
-          >
-            <IconBrandGoogle className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-            <span className="text-neutral-700 dark:text-neutral-300 text-sm">
-              Google
-            </span>
-            <BottomGradient />
-          </button>
-          <button
-            className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-            type="submit"
-          >
-            <IconBrandOnlyfans className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-            <span className="text-neutral-700 dark:text-neutral-300 text-sm">
-              OnlyFans
-            </span>
-            <BottomGradient />
-          </button>
-        </div> */}
       </form>
     </div>
   );
@@ -185,7 +209,7 @@ const BottomGradient = () => {
   );
 };
 
-const LabelInputContainer = ({
+export const LabelInputContainer = ({
   children,
   className,
 }: {

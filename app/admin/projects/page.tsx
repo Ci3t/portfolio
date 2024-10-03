@@ -2,26 +2,38 @@ import ProjectsAdmin from "@/components/ProjectsAdmin";
 import { getProjects } from "@/lib/action";
 import Link from "next/link";
 import React from "react";
+interface TechStack {
+  _id: string;
+  name: string;
+  secure_url: string;
+}
 
+interface Project {
+  _id: string;
+  title: string;
+  des: string;
+  img_url: string;
+  img_id?: string;
+  iconLists: TechStack[];
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 const Projects = async () => {
-  const projects = await getProjects(); // Server-side fetch
+  const projects = (await getProjects()) as Project[]; // Server-side fetch
+  console.log(projects);
 
   return (
-    <div>
-      {projects.map((p, i) => (
-        <div className="flex flex-col gap-3">
+    <div className="grid gap-4">
+      {projects.map((project) => (
+        <div key={project._id} className="flex flex-col gap-3">
           <ProjectsAdmin
-            id={p._id}
-            key={p._id}
-            title={p.title}
-            des={p.des}
-            img_url={p.img_url}
+            id={project._id}
+            title={project.title}
+            des={project.des}
+            img_url={project.img_url}
+            iconLists={project.iconLists}
           />
         </div>
-        // <div key={i}>
-        //   <h1>{p.title}</h1>
-        //   <p>{p.des}</p>
-        // </div>
       ))}
     </div>
   );

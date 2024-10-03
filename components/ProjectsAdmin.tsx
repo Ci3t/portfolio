@@ -1,20 +1,26 @@
 "use client";
 import { deleteProject, getProjects } from "@/lib/action";
 
-interface ProjectsAdminPage {
+interface TechStack {
+  _id: string;
+  name: string;
+  secure_url: string;
+}
+
+interface ProjectsAdminProps {
+  id: string;
   title: string;
   des: string;
-  id?: string | undefined;
-  updatedAt?: Date;
   img_url: string;
+  iconLists: TechStack[];
 }
 const ProjectsAdmin = async ({
-  title,
   id,
+  title,
   des,
-  updatedAt,
   img_url,
-}: ProjectsAdminPage) => {
+  iconLists,
+}: ProjectsAdminProps) => {
   const handleDelete = async (e: any) => {
     console.log(e.target);
 
@@ -48,6 +54,16 @@ const ProjectsAdmin = async ({
           <p className="text-xs text-neutral-500 dark:text-neutral-300">
             {/* {updatedAt && updatedAt} */}
           </p>
+          <div>
+            {iconLists?.map((icon, index) => (
+              <img
+                key={index}
+                src={icon.secure_url}
+                alt={icon.name}
+                className="w-6 h-6"
+              />
+            ))}
+          </div>
         </div>
         <div className=" flex flex-row justify-center items-center gap-3 p-3">
           <button>Update</button>

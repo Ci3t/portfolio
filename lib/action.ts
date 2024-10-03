@@ -3,50 +3,97 @@
 
 import { revalidatePath } from "next/cache";
 import { connectToDb } from "./db";
-import { Projects } from "./models";
-import { v2 as cloudinary } from 'cloudinary';
+import { Projects, TechStack } from "./models";
+import cloudinary from "./cloudinary";
 
-cloudinary.config({
-    cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+export const addProject = async (formData: FormData) => {
+  await connectToDb();
 
-export const addProject = async(formdata:FormData)=>{
-    connectToDb()
+  const { title, des, icon, img_id, img_url, iconResources } = Object.fromEntries(formData) as {
+    title: string;
+    des: string;
+    icon: string;
+    img_id: string;
+    img_url: string;
+    iconResources: string;
+  };
 
-    const {title,des,imgUrl,icon,img_id,img_url} = Object.fromEntries(formdata)
+  let iconArray: string[] = [];
+  if (typeof icon === 'string') {
+    iconArray = icon.split(',').map((tag) => tag.trim()); // Split and trim tags
+  }
 
-    if (typeof icon === "string") {
-        const iconArray = icon.split(",").map((item) => item.trim());
-        console.log("iconArray", iconArray);
+  if (iconArray.length === 0) {
+    throw new Error('No icons provided for the project'); // Ensure there are tags
+  }
+
+  const iconResourcesArray = JSON.parse(iconResources); // Parse icon resources
+
+  // Input validation
+  if (!title || !des) {
+    throw new Error('Missing required fields: title or description');
+  }
+  if (!img_url) {
+    throw new Error('One image is required');
+  }
+
+  // Missing icon tracking
+  const missingIcons: string[] = [];
+
+  // Cloudinary check for tech stack icons
+  const techIcons = await Promise.all(
+    iconArray.map(async (tag: string, index: number) => {
+      const existingIcon = await TechStack.findOne({ name: tag });
+      if (existingIcon) {
+        return existingIcon._id; // Return existing icon ID
       } else {
-        console.error("Expected a string but got a file or invalid type for icon.");
-      }    
+        const iconResource = iconResourcesArray[index]; // Access corresponding resource
+        if (!iconResource?.secure_url) {
+          missingIcons.push(tag); // Add missing tag to the list
+          return null;
+        }
 
-      if(!(title || des )){
-        throw new Error("Missing Fields")
-        
+        const res = await cloudinary.uploader.upload(iconResource.secure_url, {
+          public_id: tag, // Use the tag as public_id
+        });
+
+        // Create a new entry for the uploaded icon in the TechStack collection
+        const newIcon = new TechStack({
+          name: tag,
+          public_id: res.public_id,
+          secure_url: res.secure_url,
+        });
+
+        await newIcon.save();
+        return newIcon._id; // Return the new icon's ID
       }
-      if(!(img_url || imgUrl )){
-        throw new Error("One Image at least required")
-        
-      }
-    const newProject = new Projects({
-        title,des,img_id,img_url,icon,imgUrl
     })
-    console.log(formdata);
+  );
 
-    await newProject.save()
-    console.log("New Project has been added");
-    return "New Project has been added"
-    
-    
-}
+  // Check if there are any missing icons and throw an error
+  if (missingIcons.length > 0) {
+    throw new Error(`Missing icons for: ${missingIcons.join(', ')}`);
+  }
+
+  // Create a new project with associated tech icons
+  const newProject = new Projects({
+    title,
+    des,
+    img_id,
+    img_url,
+    iconLists: techIcons.filter(Boolean), // Save the array of tech icon IDs here
+  });
+
+  await newProject.save(); // Save the project to the database
+
+  console.log('New Project has been added');
+  return 'New Project has been added';
+};
+
 
 export const deleteProject = async (id:string)=>{
 
-    connectToDb()
+    await connectToDb()
 
     try {
         if (!id) {
@@ -75,18 +122,65 @@ export const deleteProject = async (id:string)=>{
     }
 
 }
-export const getProjects = async ()=>{
 
-    connectToDb()
+export const getProjects = async () => {
+  await connectToDb();
 
-    try {
-      
-         const projects = await Projects.find()
-         return projects
-    } catch (error:any) {
-        console.log(error);
-        throw new Error ("Failed to fetch Projects")
-        
-    }
-
+  try {
+    const projects = await Projects.find()
+      .populate({
+        path: 'iconLists',
+        model: 'TechStack',
+        select: 'name secure_url -_id' // Exclude _id if you don't need it
+      })
+      .lean() // Convert to plain JavaScript objects
+      .exec(); // Make sure to execute the query
+    
+    return JSON.parse(JSON.stringify(projects)); // Serialize for Next.js
+  } catch (error: any) {
+    console.error("Error fetching projects:", error);
+    throw new Error("Failed to fetch Projects");
+  }
 }
+
+
+export const addTechStackIcon = async (formData: FormData): Promise<string> => {
+  await connectToDb();
+
+  const { name, public_id, secure_url } = Object.fromEntries(formData) as {
+    name: string;
+    public_id: string;
+    secure_url: string;
+  };
+
+  const existingIcon = await TechStack.findOne({ name });
+  if (existingIcon) {
+    throw new Error(`Icon for ${name} already exists.`);
+  }
+
+  const newIcon = new TechStack({
+    name,
+    public_id,
+    secure_url,
+  });
+
+  await newIcon.save();
+  return 'Tech Stack Icon added successfully';
+};
+
+
+export const checkTechStackIcons = async (iconArray: string[]): Promise<{ missingIcons: string[] }> => {
+  await connectToDb();
+
+  const missingIcons: string[] = [];
+
+  // Check each icon if it exists in the database
+  for (const icon of iconArray) {
+    const existingIcon = await TechStack.findOne({ name: icon });
+    if (!existingIcon) {
+      missingIcons.push(icon);
+    }
+  }
+
+  return { missingIcons };
+};
