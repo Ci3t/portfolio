@@ -37,7 +37,7 @@ export function AddProject() {
     // Convert the comma-separated tags (icons) into an array
     const iconInput = formData.get("icon") as string;
     const iconArray = iconInput
-      ? iconInput.split(",").map((tag) => tag.trim())
+      ? iconInput.split(",").map((tag) => tag.trim().toLowerCase()) // Convert to lowercase
       : [];
 
     try {
@@ -112,8 +112,8 @@ export function AddProject() {
         </div>
 
         <LabelInputContainer className="mb-4">
-          <Label htmlFor="imgUrl">Live Website</Label>
-          <Input name="imgUrl" id="imgUrl" placeholder="••••••••" type="text" />
+          <Label htmlFor="link">Live Website</Label>
+          <Input name="link" id="link" placeholder="••••••••" type="text" />
         </LabelInputContainer>
 
         <LabelInputContainer className="mb-4">

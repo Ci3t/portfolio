@@ -37,7 +37,8 @@ const projectsSchema = new Schema({
 
 
 const TechStackSchema = new Schema({
-    name: { type: String, required: true },
+    name: { type: String, required: true ,lowercase: true, 
+        trim: true},
     public_id: { type: String, required: true },
     secure_url: { type: String, required: true },
   });

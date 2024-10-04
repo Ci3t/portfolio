@@ -9,24 +9,26 @@ import cloudinary from "./cloudinary";
 export const addProject = async (formData: FormData) => {
   await connectToDb();
 
-  const { title, des, icon, img_id, img_url, iconResources } = Object.fromEntries(formData) as {
+  const { title, des, icon, img_id, img_url, iconResources,link } = Object.fromEntries(formData) as {
     title: string;
     des: string;
     icon: string;
     img_id: string;
     img_url: string;
+    link: string;
     iconResources: string;
   };
 
-  let iconArray: string[] = [];
-  if (typeof icon === 'string') {
-    iconArray = icon.split(',').map((tag) => tag.trim()); // Split and trim tags
-  }
+   // Normalize the icon array: trim whitespace and convert to lowercase
+   const iconArray = icon
+   ? icon.split(',')
+       .map(tag => tag.trim().toLowerCase())
+       .filter(Boolean) // Remove empty strings
+   : [];
 
-  if (iconArray.length === 0) {
-    throw new Error('No icons provided for the project'); // Ensure there are tags
-  }
-
+ if (iconArray.length === 0) {
+   throw new Error('No icons provided for the project');
+ }
   const iconResourcesArray = JSON.parse(iconResources); // Parse icon resources
 
   // Input validation
@@ -54,12 +56,12 @@ export const addProject = async (formData: FormData) => {
         }
 
         const res = await cloudinary.uploader.upload(iconResource.secure_url, {
-          public_id: tag, // Use the tag as public_id
+          public_id: tag + Math.floor(Math.random()*10000), // Use the tag as public_id
         });
 
         // Create a new entry for the uploaded icon in the TechStack collection
         const newIcon = new TechStack({
-          name: tag,
+          name: tag.toLowerCase(),
           public_id: res.public_id,
           secure_url: res.secure_url,
         });
@@ -81,6 +83,7 @@ export const addProject = async (formData: FormData) => {
     des,
     img_id,
     img_url,
+    link,
     iconLists: techIcons.filter(Boolean), // Save the array of tech icon IDs here
   });
 
@@ -122,6 +125,37 @@ export const deleteProject = async (id:string)=>{
     }
 
 }
+export const updateProject = async (id: string, updatedData: any) => {
+  await connectToDb();
+
+  try {
+    if (!id) {
+      throw new Error("No id provided");
+    }
+
+    const project = await Projects.findById(id);
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    console.log("Current project data:", project); // Log current project data
+    console.log("Updated data:", updatedData); // Log incoming updated data
+
+    // Update the project with the provided data
+    Object.assign(project, updatedData);
+
+    // Save the updated project back to the database
+    const updatedProject = await project.save();
+
+    console.log("Project updated successfully:", updatedProject); // Log success
+    revalidatePath("/admin/projects")
+    return JSON.parse(JSON.stringify(updatedProject));
+    
+  } catch (error: any) {
+    console.error("Error updating the project:", error); // Log error for debugging
+    throw new Error("Failed to update the project");
+  }
+};
 
 export const getProjects = async () => {
   await connectToDb();
@@ -137,6 +171,7 @@ export const getProjects = async () => {
       .exec(); // Make sure to execute the query
     
     return JSON.parse(JSON.stringify(projects)); // Serialize for Next.js
+    revalidatePath("/admin/projects")
   } catch (error: any) {
     console.error("Error fetching projects:", error);
     throw new Error("Failed to fetch Projects");
@@ -152,14 +187,14 @@ export const addTechStackIcon = async (formData: FormData): Promise<string> => {
     public_id: string;
     secure_url: string;
   };
-
+  const normalizedName = name.trim().toLowerCase();
   const existingIcon = await TechStack.findOne({ name });
   if (existingIcon) {
-    throw new Error(`Icon for ${name} already exists.`);
+    throw new Error(`Icon for ${normalizedName} already exists.`);
   }
 
   const newIcon = new TechStack({
-    name,
+    name: normalizedName,
     public_id,
     secure_url,
   });
@@ -176,11 +211,14 @@ export const checkTechStackIcons = async (iconArray: string[]): Promise<{ missin
 
   // Check each icon if it exists in the database
   for (const icon of iconArray) {
-    const existingIcon = await TechStack.findOne({ name: icon });
+    const normalizedIcon = icon.trim().toLowerCase();
+    const existingIcon = await TechStack.findOne({ name: normalizedIcon });
     if (!existingIcon) {
-      missingIcons.push(icon);
+      missingIcons.push(normalizedIcon);
     }
   }
 
   return { missingIcons };
 };
+
+

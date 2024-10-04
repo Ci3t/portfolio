@@ -1,12 +1,8 @@
+import UpdateProject from "@/components/UpdateProject";
 import React from "react";
 
 const AdminDashboard = async () => {
-  return (
-    <div>
-      hi
-      {/* Pass projects directly, no need for JSON.stringify */}
-    </div>
-  );
+  return <div>hi</div>;
 };
 
 export default AdminDashboard;

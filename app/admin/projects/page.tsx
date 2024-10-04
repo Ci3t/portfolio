@@ -13,6 +13,7 @@ interface Project {
   title: string;
   des: string;
   img_url: string;
+  link: string;
   img_id?: string;
   iconLists: TechStack[];
   createdAt?: Date;
@@ -32,6 +33,7 @@ const Projects = async () => {
             des={project.des}
             img_url={project.img_url}
             iconLists={project.iconLists}
+            link={project.link}
           />
         </div>
       ))}
