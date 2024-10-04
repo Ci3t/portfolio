@@ -125,38 +125,68 @@ export const deleteProject = async (id:string)=>{
     }
 
 }
+
+export const getTechOptions = async () => {
+  await connectToDb();
+  try {
+    const techOptions = await TechStack.find({}).select('name secure_url _id');
+    return JSON.parse(JSON.stringify(techOptions));
+  } catch (error) {
+    console.error('Error fetching tech options:', error);
+    throw new Error('Failed to fetch tech options');
+  }
+};
 export const updateProject = async (id: string, updatedData: any) => {
   await connectToDb();
-
+  
   try {
     if (!id) {
       throw new Error("No id provided");
     }
-
+    
     const project = await Projects.findById(id);
     if (!project) {
       throw new Error("Project not found");
     }
 
-    console.log("Current project data:", project); // Log current project data
-    console.log("Updated data:", updatedData); // Log incoming updated data
+    const { iconLists, ...otherData } = updatedData;
 
-    // Update the project with the provided data
-    Object.assign(project, updatedData);
+    // Update basic fields
+    Object.assign(project, otherData);
 
-    // Save the updated project back to the database
+    // Handle tech stack updates if provided
+    if (iconLists && Array.isArray(iconLists)) {
+      // Check if all tech stack icons exist
+      const { missingIcons } = await checkTechStackIcons(iconLists);
+      
+      if (missingIcons.length > 0) {
+        throw new Error(`Unknown technology tags: ${missingIcons.join(', ')}`);
+      }
+
+      // Find all matching tech stack documents
+      const techStacks = await TechStack.find({
+        name: { $in: iconLists.map(name => name.toLowerCase().trim()) }
+      });
+
+      // Update the iconLists with the found document IDs
+      project.iconLists = techStacks.map(tech => tech._id);
+    }
+
+    // Save the updated project
     const updatedProject = await project.save();
+    
+    // Populate the iconLists before returning
+    const populatedProject = await updatedProject.populate('iconLists');
 
-    console.log("Project updated successfully:", updatedProject); // Log success
-    revalidatePath("/admin/projects")
-    return JSON.parse(JSON.stringify(updatedProject));
+    revalidatePath("/admin/projects");
+    return JSON.parse(JSON.stringify(populatedProject));
     
   } catch (error: any) {
-    console.error("Error updating the project:", error); // Log error for debugging
-    throw new Error("Failed to update the project");
+    const errorMessage = error.message || "Failed to update the project";
+    console.error("Error updating project:", errorMessage);
+    throw new Error(errorMessage);
   }
 };
-
 export const getProjects = async () => {
   await connectToDb();
 

@@ -1,8 +1,8 @@
 "use client";
-import { deleteProject, updateProject } from "@/lib/action";
+import { deleteProject, updateProject, getTechOptions } from "@/lib/action";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
-import ProjectForm from "./UpdateProject"; // Assume this is your update form component
+import { useState, useEffect } from "react";
+import ProjectForm from "./UpdateProject";
 import { Modal } from "./ui/UpdateModal";
 
 interface TechStack {
@@ -26,11 +26,25 @@ const ProjectsAdmin = ({
   des,
   link,
   img_url,
-  iconLists,
+  iconLists = [],
 }: ProjectsAdminProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [techOptions, setTechOptions] = useState<TechStack[]>([]);
 
-  // Handle delete
+  useEffect(() => {
+    const loadTechOptions = async () => {
+      if (!isModalOpen) return;
+      try {
+        const options = await getTechOptions();
+        setTechOptions(options);
+      } catch (error) {
+        console.error("Error loading tech options:", error);
+      }
+    };
+
+    loadTechOptions();
+  }, [isModalOpen]);
+
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!id) return;
@@ -42,24 +56,25 @@ const ProjectsAdmin = ({
     }
   };
 
-  // Open the modal
   const handleUpdateClick = () => {
     setIsModalOpen(true);
   };
 
-  // Close the modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
-  // Handle the update logic
-  const handleUpdateProject = async (updatedData: any) => {
+  const handleUpdateProject = async (
+    updatedData: any
+  ): Promise<{ error?: string }> => {
     try {
       await updateProject(id, updatedData);
       console.log("Project updated successfully");
       setIsModalOpen(false);
+      return {}; // No error, return an empty object
     } catch (error) {
       console.error("Error updating project:", error);
+      return { error: (error as Error).message }; // Return an error object
     }
   };
 
@@ -69,10 +84,7 @@ const ProjectsAdmin = ({
       <div className="flex flex-col justify-between rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] mb-4 dark:bg-black-100 border md:max-w-xl md:flex-row">
         <img
           className="h-60 w-full rounded-t-lg object-cover md:h-auto md:w-28 md:rounded-none md:rounded-l-lg"
-          src={
-            img_url ||
-            "https://res.cloudinary.com/dkvjoubvz/image/upload/v1727713634/ycz3zaya8pntopsndheg.jpg"
-          }
+          src={img_url}
           alt={title}
         />
         <div className="flex flex-col justify-start p-6">
@@ -127,7 +139,8 @@ const ProjectsAdmin = ({
               title,
               des,
               img_url,
-              icon: iconLists.map((icon) => icon.name).join(", "),
+              link,
+              iconLists: iconLists.map((icon) => icon.name).join(", "),
             }}
             onSave={handleUpdateProject}
           />
