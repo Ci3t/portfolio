@@ -1,13 +1,11 @@
 "use client";
-import React, { useState } from "react";
-import { FileUpload } from "@/components/ui/FileUpload";
-import { read } from "fs";
+import { useState } from "react";
 
 type Img64 = {
   imgUrl: string | ArrayBuffer | null | undefined;
 };
 export function FileUp() {
-  const [files, setFiles] = useState<File>();
+  const [file, setFile] = useState<File | null>(null);
   const [imgUrl, setImgUrl] = useState<Img64 | null>(null);
   const handleFileUpload = (file: File) => {
     if (file) {
@@ -19,14 +17,14 @@ export function FileUp() {
       };
 
       reader.readAsDataURL(file);
-      setFiles(file);
+      setFile(file);
       //   console.log(files);
     }
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto min-h-96 border border-dashed bg-white dark:bg-black border-neutral-200 dark:border-neutral-800 rounded-lg">
-      <FileUpload onChange={handleFileUpload} />
+      {/* <FileUpload onChange={handleFileUpload} /> */}
     </div>
   );
 }

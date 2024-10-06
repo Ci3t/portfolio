@@ -1,7 +1,7 @@
 "use client";
-import { deleteProject, updateProject, getTechOptions } from "@/lib/action";
 import { Separator } from "@/components/ui/separator";
-import { useState, useEffect } from "react";
+import { deleteProject, getTechOptions, updateProject } from "@/lib/action";
+import { useEffect, useState } from "react";
 import ProjectForm from "./UpdateProject";
 import { Modal } from "./ui/UpdateModal";
 

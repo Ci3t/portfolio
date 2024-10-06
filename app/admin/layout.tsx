@@ -1,7 +1,7 @@
-import { redirect } from "next/navigation";
-import { auth, clerkClient } from "@clerk/nextjs/server";
 import { AdminNavBar } from "@/components/AdminNavBar";
 import { getProjects } from "@/lib/action";
+import { auth, clerkClient } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export interface ProjectsData {
   _id: number;
@@ -41,9 +41,10 @@ export default async function AdminLayout({
   const projects: ProjectsData[] = await getProjects();
 
   return (
-    <div className="flex flex-col dark:bg-black-100 dark:text-white">
+    <div className="flex flex-col">
       <AdminNavBar projects={projects || []} />
-      <main className="flex-1 p-4 mt-15">{children}</main>
+
+      <main className="flex-1">{children}</main>
     </div>
   );
 }

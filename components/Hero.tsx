@@ -1,8 +1,7 @@
-import React from "react";
+import { FaArrowTrendUp } from "react-icons/fa6";
+import ShimmerButton from "./ui/ShimmerButton";
 import { Spotlight } from "./ui/Spotlight";
 import { TextGenerateEffect } from "./ui/text-generate-effect";
-import ShimmerButton from "./ui/ShimmerButton";
-import { FaArrowTrendUp } from "react-icons/fa6";
 
 const Hero = () => {
   return (

@@ -1,13 +1,6 @@
 "use client";
 import React, { ReactNode } from "react";
 
-import { cn } from "@/lib/utils";
-import {
-  IconBrandGithub,
-  IconBrandGoogle,
-  IconBrandOnlyfans,
-} from "@tabler/icons-react";
-
 interface ModalProps {
   onClose: () => void; // Function to close the modal
   children: ReactNode; // Dynamically passed content, like forms

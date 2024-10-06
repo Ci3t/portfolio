@@ -1,7 +1,5 @@
 import ProjectsAdmin from "@/components/ProjectsAdmin";
 import { getProjects } from "@/lib/action";
-import Link from "next/link";
-import React from "react";
 interface TechStack {
   _id: string;
   name: string;

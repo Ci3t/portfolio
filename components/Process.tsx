@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { CanvasRevealEffect } from "@/components/ui/CanvasRevealEffect";
 import { cardData } from "@/data";
+import { AnimatePresence, motion } from "framer-motion";
 
 const Process = () => {
   return (

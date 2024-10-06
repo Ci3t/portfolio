@@ -1,8 +1,6 @@
-import React from "react";
-import ShimmerButton from "./ui/ShimmerButton";
-import { FaLocationArrow } from "react-icons/fa6";
 import { socialMedia } from "@/data";
-import { div } from "framer-motion/client";
+import { FaLocationArrow } from "react-icons/fa6";
+import ShimmerButton from "./ui/ShimmerButton";
 
 const Footer = () => {
   return (

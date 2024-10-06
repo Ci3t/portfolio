@@ -1,8 +1,6 @@
 import { projects } from "@/data";
-import { div } from "framer-motion/client";
-import React from "react";
-import { PinContainer } from "./ui/3d-pin";
 import { FaArrowTurnUp } from "react-icons/fa6";
+import { PinContainer } from "./ui/3d-pin";
 
 const RecentProjects = () => {
   return (

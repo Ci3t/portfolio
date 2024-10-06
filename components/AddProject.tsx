@@ -1,13 +1,13 @@
 "use client";
-import React, { useState } from "react";
-import { CldUploadWidget } from "next-cloudinary";
-import { cn } from "@/lib/utils";
-import { Label } from "./ui/Label";
-import { Input } from "./ui/Input";
-import { Textarea } from "./ui/textarea";
 import { addProject, checkTechStackIcons } from "@/lib/action";
-import Image from "next/image";
+import { cn } from "@/lib/utils";
+import { AlertCircle, Upload } from "lucide-react";
+import { CldUploadWidget } from "next-cloudinary";
+import React, { useState } from "react";
 import TagInput from "./Tags";
+import { Input } from "./ui/Input";
+import { Label } from "./ui/Label";
+import { Textarea } from "./ui/textarea";
 
 interface CloudinaryResourceInfo {
   public_id: string;
@@ -19,6 +19,7 @@ export function AddProject() {
     undefined
   );
   const [tags, setTags] = useState<string[]>([]);
+  const [onSuccessMsg, setOnSuccessMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [missingIcons, setMissingIcons] = useState<string[]>([]);
   const [iconResources, setIconResources] = useState<CloudinaryResourceInfo[]>(
@@ -28,6 +29,7 @@ export function AddProject() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null); // Clear previous errors
+    setOnSuccessMsg(null);
     setMissingIcons([]); // Clear missing icons from previous run
     console.log("Form submission started");
 
@@ -60,6 +62,7 @@ export function AddProject() {
 
       const response = await addProject(formData);
       console.log("Server response:", response);
+      setOnSuccessMsg(response);
       setError(null); // Clear errors on successful submission
     } catch (error: any) {
       if (error.message) {
@@ -69,145 +72,155 @@ export function AddProject() {
       }
     }
   };
-
   return (
-    <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
-      <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-        Add Project
-      </h2>
+    <div className="min-h-screen w-full  p-4 md:p-8 rounded-xl">
+      <div className="max-w-3xl w-full mx-auto rounded-xl p-6 md:p-8 shadow-lg bg-purple-400  bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-40 border border-violet-400/70">
+        <h2 className="text-2xl font-bold text-neutral-800 dark:text-neutral-100 mb-6">
+          Add Project
+        </h2>
+        {onSuccessMsg && <p>{onSuccessMsg}</p>}
+        {/* Error Display */}
+        {error && (
+          <div className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+            <div className="flex items-center gap-2 text-red-700 dark:text-red-400">
+              <AlertCircle className="h-5 w-5" />
+              <p>{error}</p>
+            </div>
+          </div>
+        )}
 
-      {/* Error Section */}
-      {error && (
-        <div
-          className="bg-white text-red-500 text-lg"
-          style={{ marginTop: "10px" }}
-        >
-          {error}
-        </div>
-      )}
+        {/* Missing Icons Display */}
+        {missingIcons.length > 0 && (
+          <div className="mb-6 p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+            <p className="font-medium text-amber-800 dark:text-amber-400 mb-2">
+              Missing icons:
+            </p>
+            <ul className="list-disc list-inside text-amber-700 dark:text-amber-300">
+              {missingIcons.map((icon, idx) => (
+                <li key={idx}>{icon}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
-      {/* Missing Icons Section */}
-      {missingIcons.length > 0 && (
-        <div className="text-red-500">
-          <p>Missing the following icons:</p>
-          <ul>
-            {missingIcons.map((icon, idx) => (
-              <li key={idx}>{icon}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <form className="my-8" onSubmit={handleSubmit}>
-        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <LabelInputContainer>
-            <Label htmlFor="title">Title</Label>
+            <Label
+              htmlFor="title"
+              className="text-neutral-700 dark:text-neutral-200"
+            >
+              Title
+            </Label>
             <Input
               id="title"
               name="title"
               placeholder="Project Title"
               type="text"
+              className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 focus:ring-blue-500 dark:focus:ring-blue-400"
             />
           </LabelInputContainer>
-        </div>
 
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="link">Live Website</Label>
-          <Input name="link" id="link" placeholder="••••••••" type="text" />
-        </LabelInputContainer>
-
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="img_url">img</Label>
-          <CldUploadWidget
-            signatureEndpoint="/api/sign-image"
-            onSuccess={(result) => {
-              const info = result?.info as CloudinaryResourceInfo;
-              setResource(info);
-            }}
-          >
-            {({ open }) => (
-              <button
-                type="button"
-                onClick={() => {
-                  setResource(undefined); // Clear the resource
-                  open(); // Open the Cloudinary widget
-                }}
-              >
-                Upload an Image
-              </button>
-            )}
-          </CldUploadWidget>
-          {resource?.secure_url && (
-            <img
-              className="w-[200px]"
-              src={resource?.secure_url || ""}
-              alt={"preview"}
+          <LabelInputContainer>
+            <Label
+              htmlFor="link"
+              className="text-neutral-700 dark:text-neutral-200"
+            >
+              Live Website
+            </Label>
+            <Input
+              name="link"
+              id="link"
+              placeholder="https://..."
+              type="text"
+              className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700"
             />
-          )}
-        </LabelInputContainer>
+          </LabelInputContainer>
 
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="icon">Icons</Label>
-          <TagInput tags={tags} setTags={setTags} />
-        </LabelInputContainer>
-
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="techIcon">
-            Upload Tech Stack Icon (for new tags)
-          </Label>
-          <CldUploadWidget
-            signatureEndpoint="/api/sign-image"
-            onSuccess={(result) => {
-              const info = result?.info as CloudinaryResourceInfo;
-              setIconResources((prevIcons) => [...prevIcons, info]); // Add each new icon to the state
-            }}
-          >
-            {({ open }) => (
-              <button type="button" onClick={() => open()}>
-                Upload an Icon
-              </button>
+          <LabelInputContainer>
+            <Label
+              htmlFor="img_url"
+              className="text-neutral-700 dark:text-neutral-200"
+            >
+              Project Image
+            </Label>
+            <CldUploadWidget
+              signatureEndpoint="/api/sign-image"
+              onSuccess={(result) => {
+                setResource(result?.info as CloudinaryResourceInfo);
+              }}
+            >
+              {({ open }) => (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setResource(undefined);
+                    open();
+                  }}
+                  className="flex items-center justify-center w-full px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                >
+                  <Upload className="w-5 h-5 mr-2" />
+                  Upload Project Image
+                </button>
+              )}
+            </CldUploadWidget>
+            {resource?.secure_url && (
+              <div className="mt-4 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700">
+                <img
+                  className="w-full h-48 object-cover"
+                  src={resource.secure_url}
+                  alt="Project preview"
+                />
+              </div>
             )}
-          </CldUploadWidget>
+          </LabelInputContainer>
 
-          {/* Display uploaded tech stack icons */}
-          {iconResources.map((icon, idx) => (
-            <img
-              key={idx}
-              className="w-[100px]"
-              src={icon.secure_url}
-              alt={`icon-${idx}`}
+          <LabelInputContainer>
+            <Label
+              htmlFor="icon"
+              className="text-neutral-700 dark:text-neutral-200"
+            >
+              Tech Stack
+            </Label>
+            <TagInput
+              tags={tags}
+              setTags={setTags}
+              // className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700"
             />
-          ))}
-        </LabelInputContainer>
+          </LabelInputContainer>
 
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="des">Description</Label>
-          <Textarea id="des" name="des" placeholder="Describe the Project" />
-        </LabelInputContainer>
+          <LabelInputContainer>
+            <Label
+              htmlFor="des"
+              className="text-neutral-700 dark:text-neutral-200"
+            >
+              Description
+            </Label>
+            <Textarea
+              id="des"
+              name="des"
+              placeholder="Describe your project..."
+              className="min-h-[120px] bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700"
+            />
+          </LabelInputContainer>
 
-        <button
-          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] cursor-pointer"
-          type="submit"
-          disabled={!resource}
-        >
-          Submit &rarr;
-          <BottomGradient />
-        </button>
-
-        <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
-      </form>
+          <button
+            type="submit"
+            disabled={!resource}
+            className={cn(
+              "w-full py-3 px-4 rounded-lg font-medium transition-all duration-200",
+              "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800",
+              "text-white shadow-lg shadow-blue-500/25",
+              "disabled:opacity-50 disabled:cursor-not-allowed",
+              "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-800"
+            )}
+          >
+            Submit Project
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
-
-const BottomGradient = () => {
-  return (
-    <>
-      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
-      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-    </>
-  );
-};
 
 export const LabelInputContainer = ({
   children,
@@ -217,8 +230,6 @@ export const LabelInputContainer = ({
   className?: string;
 }) => {
   return (
-    <div className={cn("flex flex-col space-y-2 w-full", className)}>
-      {children}
-    </div>
+    <div className={cn("flex flex-col space-y-2", className)}>{children}</div>
   );
 };

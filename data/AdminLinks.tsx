@@ -1,10 +1,8 @@
 // navLinks.tsx
-import React from "react";
 import {
-  IconSettings,
   IconBrandTabler,
+  IconSettings,
   IconUserBolt,
-  IconArrowLeft,
 } from "@tabler/icons-react";
 import Image from "next/image";
 
@@ -20,6 +18,13 @@ export const adminLinks = [
   {
     label: "Add Project",
     href: "/admin/addproject",
+    icon: (
+      <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+    ),
+  },
+  {
+    label: "Add Icon",
+    href: "/admin/addicon",
     icon: (
       <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
     ),
