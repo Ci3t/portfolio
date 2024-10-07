@@ -39,25 +39,22 @@ export function AddIconForm() {
   };
 
   return (
-    <div className="min-h-[20rem] w-full max-w-2xl  p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white text-center">
-        Add Tech Stack Icon
+    <div className="min-h-[20rem] w-full max-w-2xl  p-6   rounded-lg  shadow-lg bg-purple-400  bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-40 border border-violet-400/70">
+      <h2 className="text-2xl font-bold mb-6  dark:text-white text-center ">
+        Add Icon Name
       </h2>
       {onSuccess && <p>{onSuccess}</p>}
       <form onSubmit={handleSubmit} className="space-y-6">
         <LabelInputContainer>
-          <Label
-            htmlFor="title"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-200"
-          >
+          <Label htmlFor="title" className="block text-sm font-medium  ">
             Title
           </Label>
           <Input
             type="text"
             name="name"
-            placeholder="Tech Stack Name (e.g., React)"
+            placeholder="Icon Name (e.g., React)"
             required
-            className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 block w-full px-3 py-2 bg-white dark:bg-[#190E36] border-violet-500 dark:border-violet-500 focus:ring-violet-500 dark:focus:ring-violet-400"
           />
         </LabelInputContainer>
 
@@ -72,7 +69,7 @@ export function AddIconForm() {
               <button
                 type="button"
                 onClick={() => open()}
-                className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="w-full flex items-center justify-center px-4 py-2 border border-violet-300 dark:border-violet-600 rounded-md shadow-sm text-sm font-medium text-violet-700 dark:text-violet-200 bg-white dark:bg-[#190E36] hover:bg-violet-50 dark:hover:bg-violet-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 <Upload className="w-5 h-5 mr-2" />
                 Upload Icon Image
@@ -96,7 +93,7 @@ export function AddIconForm() {
 
         <button
           type="submit"
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 transition-colors duration-200"
         >
           Submit
         </button>

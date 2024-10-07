@@ -79,15 +79,16 @@ const ProjectsAdmin = ({
   };
 
   return (
-    <div>
+    <div className="w-full">
       {/* Project card */}
-      <div className="flex flex-col justify-between rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] mb-4 dark:bg-black-100 border md:max-w-xl md:flex-row">
+
+      <div className="flex flex-col  rounded-lg  shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] mb-2  md:flex-row lg:h-[18rem] bg-purple-400  bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-40 border border-violet-400/70 ">
         <img
-          className="h-60 w-full rounded-t-lg object-cover md:h-auto md:w-28 md:rounded-none md:rounded-l-lg"
+          className=" w-full rounded-t-lg object-cover  md:w-28 md:rounded-none md:rounded-l-lg"
           src={img_url}
           alt={title}
         />
-        <div className="flex flex-col justify-start p-6">
+        <div className="flex flex-col justify-start p-2 md:flex-wrap">
           <h5 className="mb-2 text-xl font-medium text-neutral-800 dark:text-neutral-50">
             {title}
           </h5>
@@ -98,7 +99,7 @@ const ProjectsAdmin = ({
           <Separator className="mb-2 bg-gray-200 w-full" />
           <p>{link}</p>
           <Separator className="mb-2 bg-gray-200 w-full" />
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center sm:flex-wrap-reverse">
             <div className="flex gap-2">
               {iconLists?.map((icon, index) => (
                 <img
@@ -112,16 +113,16 @@ const ProjectsAdmin = ({
                 />
               ))}
             </div>
-            <div className="flex flex-row justify-center items-center gap-3 p-3">
+            <div className="flex flex-row justify-center items-center gap-2 ">
               <button
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="px-4 py-2 bg-violet-500 text-white rounded hover:bg-violet-600"
                 onClick={handleUpdateClick}
               >
                 Update
               </button>
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600"
               >
                 Delete
               </button>
@@ -129,7 +130,6 @@ const ProjectsAdmin = ({
           </div>
         </div>
       </div>
-
       {/* Modal */}
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>

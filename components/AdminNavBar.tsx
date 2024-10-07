@@ -1,19 +1,19 @@
 "use client";
-import React from "react";
 import { ProjectsData } from "@/app/admin/layout";
+import { adminLinks } from "@/data/AdminLinks";
 import {
   Navbar,
   NavbarBrand,
-  NavbarMenuToggle,
-  NavbarMenuItem,
-  NavbarMenu,
   NavbarContent,
   NavbarItem,
+  NavbarMenu,
+  NavbarMenuItem,
+  NavbarMenuToggle,
 } from "@nextui-org/navbar";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import React from "react";
 import { AdminLogo } from "./ui/AdminLogo";
-import { adminLinks } from "@/data/AdminLinks";
 
 export interface AdminSideBarProps {
   projects: ProjectsData[];
@@ -60,7 +60,7 @@ export function AdminNavBar({ projects }: AdminSideBarProps) {
             <Link
               className="w-full flex items-center gap-3"
               color={index === 2 ? "warning" : "foreground"}
-              href="#"
+              href={item.href}
             >
               {item.icon}
               <span>{item.label}</span>

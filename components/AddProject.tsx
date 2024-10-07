@@ -116,7 +116,7 @@ export function AddProject() {
               name="title"
               placeholder="Project Title"
               type="text"
-              className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 focus:ring-blue-500 dark:focus:ring-blue-400"
+              className="bg-white  border-neutral-200 dark:border-neutral-700 focus:ring-violet-500 dark:focus:ring-violet-400"
             />
           </LabelInputContainer>
 
@@ -132,7 +132,7 @@ export function AddProject() {
               id="link"
               placeholder="https://..."
               type="text"
-              className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700"
+              className="bg-white dark:bg-[#190E36] border-neutral-200 dark:border-neutral-700"
             />
           </LabelInputContainer>
 
@@ -156,7 +156,7 @@ export function AddProject() {
                     setResource(undefined);
                     open();
                   }}
-                  className="flex items-center justify-center w-full px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                  className="flex items-center justify-center w-full px-4 py-2 rounded-lg border border-violet-200 dark:border-violet-700 bg-white dark:bg-[#190E36] text-violet-700 dark:text-violet-200 hover:bg-violet-50 dark:hover:bg-violet-800 transition-colors"
                 >
                   <Upload className="w-5 h-5 mr-2" />
                   Upload Project Image
@@ -164,7 +164,7 @@ export function AddProject() {
               )}
             </CldUploadWidget>
             {resource?.secure_url && (
-              <div className="mt-4 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700">
+              <div className="mt-4 rounded-lg overflow-hidden border border-violet-200 dark:border-violet-600">
                 <img
                   className="w-full h-48 object-cover"
                   src={resource.secure_url}
@@ -199,7 +199,7 @@ export function AddProject() {
               id="des"
               name="des"
               placeholder="Describe your project..."
-              className="min-h-[120px] bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700"
+              className="min-h-[120px] bg-white dark:bg-[#190E36] border-violet-400  dark:border-violet-600 "
             />
           </LabelInputContainer>
 
@@ -208,10 +208,10 @@ export function AddProject() {
             disabled={!resource}
             className={cn(
               "w-full py-3 px-4 rounded-lg font-medium transition-all duration-200",
-              "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800",
-              "text-white shadow-lg shadow-blue-500/25",
+              "bg-gradient-to-r from-violet-600 to-violet-700 hover:from-violet-700 hover:to-violet-800",
+              "text-white shadow-lg shadow-violet-500/25",
               "disabled:opacity-50 disabled:cursor-not-allowed",
-              "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-800"
+              "focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-800"
             )}
           >
             Submit Project

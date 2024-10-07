@@ -26,12 +26,12 @@ const TagInput: React.FC<TagInputProps> = ({ tags, setTags }) => {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2 border border-gray-300 p-3 rounded-lg">
+    <div className="flex flex-wrap items-center gap-2   rounded-lg">
       {/* Render existing tags */}
       {tags.map((tag, index) => (
         <div
           key={index}
-          className="flex items-center bg-blue-500 text-white px-3 py-1 rounded-full"
+          className="flex items-center bg-violet-500 text-white px-3 py-1 rounded-full"
         >
           {tag}
           <button

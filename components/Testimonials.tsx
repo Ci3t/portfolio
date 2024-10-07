@@ -1,8 +1,9 @@
-import React from "react";
+import { companies } from "@/data";
+import { getTestimonials } from "@/lib/testimonials.action";
 import { InfiniteMovingCards } from "./ui/InfiniteMovingCards";
-import { companies, testimonials } from "@/data";
 
-const Testimonials = () => {
+const Testimonials = async () => {
+  const testimonials = await getTestimonials();
   return (
     <div className="py-20" id="testimonials">
       <h1 className="heading">
