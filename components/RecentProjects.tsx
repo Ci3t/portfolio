@@ -41,7 +41,7 @@ const RecentProjects = async () => {
                 <img
                   src={img_url}
                   alt={title}
-                  className="z-10 absolute bottom-0"
+                  className="z-10 absolute bottom-0 object-cover h-full w-full"
                 />
               </div>
               <h1 className="font-bold lg:text-2xl md:text-xl text-base line-clamp-1">

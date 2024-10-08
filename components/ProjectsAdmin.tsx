@@ -82,9 +82,9 @@ const ProjectsAdmin = ({
     <div className="w-full">
       {/* Project card */}
 
-      <div className="flex flex-col  rounded-lg  shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] mb-2  md:flex-row lg:h-[18rem] bg-purple-400  bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-40 border border-violet-400/70 ">
+      <div className="flex flex-col rounded-lg shadow-lg mb-2 bg-purple-400 bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-40 border border-violet-400/70 ">
         <img
-          className=" w-full rounded-t-lg object-cover  md:w-28 md:rounded-none md:rounded-l-lg"
+          className=" w-full h-40 object-cover rounded-t-lg md:h-48 lg:h-56"
           src={img_url}
           alt={title}
         />

@@ -5,8 +5,11 @@ import {
   getTestimonials,
   updateTestimonial,
 } from "@/lib/testimonials.action";
+import { Label } from "@radix-ui/react-label";
 import { Pencil, Plus, Trash } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Input } from "./ui/Input";
+import { Textarea } from "./ui/textarea";
 
 interface Testimonial {
   _id: string;
@@ -56,18 +59,21 @@ export function TestimonialsManager() {
     try {
       const data = await getTestimonials();
       setTestimonials(data);
+      console.log(`data`, data);
     } catch (error) {
       console.error("Failed to fetch testimonials:", error);
     }
   };
-
+  useEffect(() => {
+    fetchTestimonials();
+  }, []);
   return (
-    <div className="p-6 max-w-4xl  ">
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-6  relative">
+      <div className="flex mb-6 gap-3">
         <h1 className="text-2xl font-bold">Testimonials Management</h1>
         <button
           onClick={() => setIsAdding((prev) => !prev)}
-          className="flex items-center px-4 py-2 bg-purple text-white rounded-lg hover:bg-purple-700 transition-colors"
+          className="flex items-center px-4 py-2 bg-violet-700 text-white rounded-lg hover:bg-violet-800 transition-colors"
         >
           <Plus className="w-4 h-4 mr-2" /> Add Testimonial
         </button>
@@ -76,18 +82,18 @@ export function TestimonialsManager() {
       {isAdding && (
         <div className="absolute inset-0 flex justify-center items-center">
           <TestiModal
-            className="relative  rounded-lg shadow-md p-2   w-[60rem]"
+            className="relative z-20 rounded-lg shadow-md p-2   w-[60rem]"
             setIsAdding={setIsAdding}
             handleSubmit={handleSubmit}
           />
         </div>
       )}
 
-      <div className="grid gap-4">
+      <div className="">
         {testimonials.map((testimonial) => (
           <div
             key={testimonial._id}
-            className="bg-white rounded-lg shadow-md p-6 border border-gray-200"
+            className="mb-4 rounded-lg shadow-md p-6  border-gray-200 bg-purple-400  bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-40 border border-violet-400/70"
           >
             {editingId === testimonial._id ? (
               <form
@@ -145,14 +151,14 @@ export function TestimonialsManager() {
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    className="px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors"
                   >
                     Save
                   </button>
                   <button
                     type="button"
                     onClick={() => setEditingId(null)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-indigo-500 transition-colors"
                   >
                     Cancel
                   </button>
@@ -180,7 +186,9 @@ export function TestimonialsManager() {
                     </button>
                   </div>
                 </div>
-                <p className="text-gray-600">{testimonial.quote}</p>
+                <p className="text-violet-300 font-medium">
+                  {testimonial.quote}
+                </p>
               </div>
             )}
           </div>
@@ -189,20 +197,29 @@ export function TestimonialsManager() {
     </div>
   );
 }
-
-const TestiModal = ({ handleSubmit, setIsAdding, className }) => {
+interface TestiModalProps {
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  setIsAdding: React.Dispatch<React.SetStateAction<boolean>>;
+  className?: string;
+}
+const TestiModal: React.FC<TestiModalProps> = ({
+  handleSubmit,
+  setIsAdding,
+  className,
+}) => {
   return (
     <div className={`${className}`}>
-      <div className="mb-6 bg-white rounded-lg shadow-md p-6 border border-gray-200">
+      <div className="mb-6 e rounded-lg shadow-md p-6 bg-purple-400  bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-40 border border-violet-400/70">
+        <h1 className="heading">Testimonials Form</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label
+            <Label
               htmlFor="name"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-white"
             >
               Name
-            </label>
-            <input
+            </Label>
+            <Input
               id="name"
               name="name"
               required
@@ -210,13 +227,13 @@ const TestiModal = ({ handleSubmit, setIsAdding, className }) => {
             />
           </div>
           <div className="space-y-2">
-            <label
+            <Label
               htmlFor="title"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-white"
             >
               Title
-            </label>
-            <input
+            </Label>
+            <Input
               id="title"
               name="title"
               required
@@ -224,30 +241,30 @@ const TestiModal = ({ handleSubmit, setIsAdding, className }) => {
             />
           </div>
           <div className="space-y-2">
-            <label
+            <Label
               htmlFor="quote"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-white"
             >
               Quote
-            </label>
-            <textarea
+            </Label>
+            <Textarea
               id="quote"
               name="quote"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[100px]"
+              className="w-full px-3 py-2 border border-violet-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[100px]"
             />
           </div>
           <div className="flex gap-2">
             <button
               type="submit"
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              className="px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors"
             >
               Save
             </button>
             <button
               type="button"
               onClick={() => setIsAdding(false)}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-violet-400 rounded-lg hover:bg-indigo-700 transition-colors"
             >
               Cancel
             </button>

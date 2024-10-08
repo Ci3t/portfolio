@@ -45,6 +45,20 @@ const TestimonialSchema = new Schema(
     timestamps: true,
   }
 );
+const WorkExperienceSchema = new Schema(
+  {
+    title: { type: String, required: true, lowercase: true, trim: true },
+    desc: { type: String, required: true, lowercase: true, trim: true },
+    thumbnail: { type: String, required: true, lowercase: true, trim: true },
+    className: { type: String, required: true, lowercase: true, trim: true },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export const WorkExperience =
+  models?.WorkExperience || model("WorkExperience", WorkExperienceSchema);
 
 export const Testimonial =
   models?.Testimonial || model("Testimonial", TestimonialSchema);
